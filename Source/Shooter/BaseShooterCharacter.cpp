@@ -15,7 +15,11 @@ ABaseShooterCharacter::ABaseShooterCharacter()
 void ABaseShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Gun = GetWorld()->SpawnActor<ABaseGun>(GunClass);
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+	Gun->SetOwner(this);
 }
 
 // Called every frame
@@ -34,7 +38,10 @@ void ABaseShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ABaseShooterCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ABaseShooterCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &ABaseShooterCharacter::LookRight);
+	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &ABaseShooterCharacter::LookUpRate);
+	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &ABaseShooterCharacter::LookRightRate);
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Shoot"), EInputEvent::IE_Pressed, this, &ABaseShooterCharacter::Shoot);
 
 }
 
@@ -58,3 +65,17 @@ void ABaseShooterCharacter::LookRight(float AxisValue)
 	AddControllerYawInput(AxisValue);
 }
 
+void ABaseShooterCharacter::LookUpRate(float AxisValue)
+{
+	AddControllerPitchInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ABaseShooterCharacter::LookRightRate(float AxisValue)
+{
+	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ABaseShooterCharacter::Shoot()
+{
+	Gun->PullTrigger();
+}

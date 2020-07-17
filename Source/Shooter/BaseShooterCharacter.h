@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BaseGun.h"
 #include "BaseShooterCharacter.generated.h"
+
 
 UCLASS()
 class SHOOTER_API ABaseShooterCharacter : public ACharacter
@@ -31,5 +33,16 @@ private:
 	void MoveRight(float AxisValue);
 	void LookUp(float AxisValue);
 	void LookRight(float AxisValue);
+	void LookUpRate(float AxisValue);
+	void LookRightRate(float AxisValue);
+	void Shoot();
 	
+	UPROPERTY(EditAnywhere)
+	float RotationRate = 20;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ABaseGun> GunClass;
+
+	UPROPERTY()
+	ABaseGun* Gun;
 };
